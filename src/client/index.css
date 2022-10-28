@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .overflow-anchor-none {
+    overflow-anchor: none;
+  }
+  .overflow-anchor-auto {
+    overflow-anchor: auto;
+  }
+}
