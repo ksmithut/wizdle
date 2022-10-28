@@ -16,7 +16,6 @@ COPY --chown=node:node postcss.config.cjs tailwind.config.cjs vite.config.js ./
 # Bundle app source
 COPY --chown=node:node src src
 RUN yarn build
-COPY --chown=node:node public public
 
 # Exports
 EXPOSE 3000
