@@ -1,7 +1,5 @@
 module.exports = {
-  content: ['./src/client/index.html', './src/client/**/*.{js,jsx}'],
-  theme: {
-    extend: {}
-  },
+  content: ['./client/index.html', './client/**/*.{js,jsx}'],
+  theme: { extend: {} },
   plugins: []
 }
