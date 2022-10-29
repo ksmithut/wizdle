@@ -115,6 +115,10 @@ export function listen (
   function handleMessage (event) {
     const data = JSON.parse(event.data)
     onMessage(data)
+    if (data.state === 'FINISHED') {
+      onFinish()
+      close()
+    }
   }
   /**
    * @param {Event} event
