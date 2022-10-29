@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 
 const { DEV_PORT = '3001', API_PROXY = 'http://localhost:3000' } = process.env
 
-const SOURCE = new URL('./src/client/', import.meta.url).pathname
+const SOURCE = new URL('./client/', import.meta.url).pathname
 const DESTINATION = new URL('./public/', import.meta.url).pathname
 
 // https://vitejs.dev/config/
