@@ -51,7 +51,7 @@ export default function Manage () {
  */
 function PreGame ({ code, state, onStartGameClick }) {
   const url = new URL(
-    `/game/${encodeURIComponent(code)}`,
+    `/join/${encodeURIComponent(code)}`,
     window.location.origin
   )
   const players = Object.entries(state?.players ?? {})

@@ -12,10 +12,7 @@ import React from 'react'
 export default function Guess ({ guess, className, style }) {
   return (
     <div
-      className={clsx(
-        'h-14 flex gap-2 max-w-5xl w-full justify-center',
-        className
-      )}
+      className={clsx('h-14 flex gap-2 w-full justify-center', className)}
       style={style}
     >
       {guess.map((char, i) => {
