@@ -9,4 +9,7 @@
   .overflow-anchor-auto {
     overflow-anchor: auto;
   }
+  .webkit-height {
+    height: -webkit-fill-available;
+  }
 }
