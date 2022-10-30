@@ -133,7 +133,7 @@ function GuessBoard ({ code, state }) {
   }, [me?.guesses])
   if (!me) return null
   return (
-    <div className='w-full p-3 h-screen flex flex-col justify-between'>
+    <div className='w-full p-3 h-full flex flex-col justify-between'>
       <div className='w-full flex-1 gap-2 my-2 overflow-y-scroll'>
         <>
           {me.guesses.map((guess, i) => (

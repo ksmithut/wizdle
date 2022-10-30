@@ -24,7 +24,7 @@ export default function App () {
 
 function Layout () {
   return (
-    <div className='h-screen webkit-height w-screen flex bg-slate-100'>
+    <div className='h-screen-dvh h-dcreen w-screen flex bg-slate-100'>
       <Outlet />
     </div>
   )

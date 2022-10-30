@@ -9,15 +9,7 @@
   .overflow-anchor-auto {
     overflow-anchor: auto;
   }
-  .webkit-height {
-    height: -webkit-fill-available;
+  .h-screen-dvh {
+    height: 100dvh;
   }
-}
-
-body {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-}
-html {
-  height: -webkit-fill-available;
 }
