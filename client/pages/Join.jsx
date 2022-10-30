@@ -10,7 +10,9 @@ export default function Join () {
   const [code, , handleKeyPress] = useKeyboardInput(
     React.useCallback(
       /** @param {string} word */
-      word => exists(word),
+      word => {
+        word.length === 4 && exists(word)
+      },
       [exists]
     ),
     React.useCallback(
@@ -43,7 +45,13 @@ export default function Join () {
         <Guess guess={guess} />
         {data === false && <p>That game does not exist</p>}
       </div>
-      <Keyboard onKeyPress={handleKeyPress} enterLabel='join' />
+      <Keyboard
+        onKeyPress={handleKeyPress}
+        enterLabel='join'
+        enterClassName={code.length === 4
+          ? 'bg-green-500'
+          : undefined}
+      />
     </div>
   )
 }

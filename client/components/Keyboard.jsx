@@ -48,12 +48,20 @@ export function useKeyboardInput (
  * @param {object} params
  * @param {(key: string) => void} params.onKeyPress
  * @param {string} [params.enterLabel]
+ * @param {string} [params.enterClassName]
  * @param {string[]} [params.hits]
  * @param {string[]} [params.misses]
  * @param {string[]} [params.knowns]
  */
 export default function Keyboard (
-  { onKeyPress, enterLabel = 'enter', hits = [], misses = [], knowns = [] }
+  {
+    onKeyPress,
+    enterLabel = 'enter',
+    enterClassName,
+    hits = [],
+    misses = [],
+    knowns = []
+  }
 ) {
   const handleKeyPress = React.useCallback(
     /** @type {React.MouseEventHandler<HTMLButtonElement>} */
@@ -114,7 +122,10 @@ export default function Keyboard (
       <div className='w-full flex gap-1 mb-1'>
         <button
           data-value='enter'
-          className='h-12 bg-gray-500 rounded font-light sm:font-bold md:text-xl uppercase'
+          className={clsx(
+            'h-12 bg-gray-500 rounded font-light sm:font-bold md:text-xl uppercase',
+            enterClassName
+          )}
           style={{ flex: 1.5 }}
           onClick={handleKeyPress}
         >

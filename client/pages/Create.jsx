@@ -92,7 +92,11 @@ export default function Create () {
         </>
       </form>
 
-      <Keyboard enterLabel='create' onKeyPress={handleKeyPress} />
+      <Keyboard
+        enterLabel='create'
+        enterClassName={word.length ? 'bg-green-500' : undefined}
+        onKeyPress={handleKeyPress}
+      />
     </div>
   )
 }

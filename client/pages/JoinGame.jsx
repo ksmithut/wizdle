@@ -46,7 +46,13 @@ export default function JoinGame () {
         </label>
         <Guess guess={nameGuess} />
       </div>
-      <Keyboard onKeyPress={handleKeyPress} enterLabel='join' />
+      <Keyboard
+        onKeyPress={handleKeyPress}
+        enterLabel='join'
+        enterClassName={name.length
+          ? 'bg-green-500'
+          : undefined}
+      />
     </div>
   )
 }
