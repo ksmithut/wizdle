@@ -45,7 +45,7 @@ export function configureGameRouter (service) {
     })
   )
 
-  router.head(
+  router.get(
     '/:code',
     wrap(async (req, res, next) => {
       if (service.hasGame(req.params.code)) res.sendStatus(200)

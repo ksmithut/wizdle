@@ -44,10 +44,7 @@ export async function joinGame (code, name) {
  */
 export async function exists (code) {
   const url = new URL(`/api/games/${encodeURIComponent(code)}`, window.origin)
-  const res = await fetch(url.toString(), {
-    method: 'HEAD',
-    credentials: 'same-origin'
-  })
+  const res = await fetch(url.toString(), { credentials: 'same-origin' })
   return res.ok
 }
 
