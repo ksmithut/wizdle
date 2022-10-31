@@ -104,7 +104,7 @@ export class GameNotFound extends Error {
   }
 }
 
-const alphabet = 'ABCDFGHJKLMNPQRSTVWXYZ'
+const alphabet = 'BCDFGHJKLMNPQRSTVWXYZ'
 
 function generateCode (length = 4) {
   return new Array(length)

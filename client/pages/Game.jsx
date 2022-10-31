@@ -8,33 +8,12 @@ import {
   useRedirectIfDoesNotExist
 } from '../lib/api-hooks.js'
 
-/**
- * @param {string} word
- */
-function normalizeWord (word) {
-  if (!word) return ''
-  return word.replace(/[^a-z]/ig, '').toUpperCase()
-}
-
 export default function Game () {
   /** @type {{ code: string }} */
   // @ts-ignore
   const { code } = useParams()
   useRedirectIfDoesNotExist(code)
-  const [word, setWord] = React.useState('')
   const { finished, state } = useGameState(code)
-  const handleWordChange = React.useCallback(
-    /** @type {React.ChangeEventHandler<HTMLInputElement>} */
-    e => setWord(normalizeWord(e.target.value)),
-    []
-  )
-  const handleSubmit = React.useCallback(
-    /** @type {React.FormEventHandler<HTMLFormElement>} */
-    (e) => {
-      e.preventDefault()
-    },
-    []
-  )
   if (!state) return <p>Loading...</p>
   if (state.state === 'INITIALIZED') {
     return (
