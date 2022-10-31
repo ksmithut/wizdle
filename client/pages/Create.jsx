@@ -61,11 +61,8 @@ export default function Create () {
     return guess
   }, [word, hideText])
   return (
-    <div className='h-full w-full flex justify-between items-center flex-col p-4'>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className='flex flex-col items-center'
-      >
+    <div className='h-full w-full flex justify-between items-center flex-col'>
+      <div className='flex flex-col items-center w-full'>
         <>
           <label htmlFor='word' className='text-3xl text-center'>
             Choose an english word
@@ -90,11 +87,11 @@ export default function Create () {
             </p>
           )}
         </>
-      </form>
+      </div>
 
       <Keyboard
         enterLabel='create'
-        enterClassName={word.length ? 'bg-green-500' : undefined}
+        enterClassName={word.length >= 4 ? 'bg-green-500' : undefined}
         onKeyPress={handleKeyPress}
       />
     </div>

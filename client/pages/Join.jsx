@@ -34,7 +34,7 @@ export default function Join () {
     })
   }, [code])
   return (
-    <div className='h-full w-full flex justify-between items-center flex-col p-4'>
+    <div className='h-full w-full flex justify-between items-center flex-col'>
       <div className='w-full flex items-center flex-col'>
         <label
           htmlFor='code'

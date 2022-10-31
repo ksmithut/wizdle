@@ -30,7 +30,7 @@ export default function Manage () {
   if (!state) return null
   return (
     <div className='flex w-full items-center flex-col'>
-      {startGameInfo.data === null
+      {state.state === 'INITIALIZED'
         ? (
           <PreGame
             code={code}
@@ -66,10 +66,7 @@ function PreGame ({ code, state, onStartGameClick }) {
         Join Code:
       </h1>
       <Guess guess={guess} className='mb-3' />
-      <QRCode
-        className='w-full max-h-52 h-full object-contain'
-        value={url.toString()}
-      />
+      <QRCode className='w-full h-52 object-contain' value={url.toString()} />
 
       <button
         disabled={players.length === 0}
@@ -97,18 +94,25 @@ function PreGame ({ code, state, onStartGameClick }) {
  */
 function Spectate ({ state }) {
   return (
-    <div>
+    <div className='w-full'>
       {state.state === 'FINISHED' && (
         <>
           <p className='font-bold uppercase text-center text-3xl'>Finished!</p>
-          <Link className='text-center text-2xl text-blue-500' to='/'>
+          <Link
+            className='text-center text-2xl text-blue-500 w-full inline-block'
+            to='/'
+          >
             Go Back Home
           </Link>
         </>
       )}
-      <div className='w-full h-full flex justify-center'>
+      <div className='flex flex-wrap justify-center'>
         {Object.entries(state.players).map(([id, player]) => (
-          <Player key={id} player={player} />
+          <Player
+            key={id}
+            player={player}
+            length={state.length}
+          />
         ))}
       </div>
     </div>
@@ -118,14 +122,15 @@ function Spectate ({ state }) {
 /**
  * @param {object} props
  * @param {import('../lib/api-hooks.js').Player} props.player
+ * @param {number} props.length
  */
-function Player ({ player }) {
+function Player ({ player, length }) {
   return (
     <div className='p-2 w-auto flex-0'>
       <p className='text-center text-xl font-bold'>{player.name}</p>
       <div className='flex flex-col gap-1'>
         {player.guesses.map((guess, i) => (
-          <div key={i} className='flex flex-row gap-1'>
+          <div key={i} className='flex flex-row gap-1 justify-center'>
             {guess.map((char, i) => {
               return (
                 <div
@@ -141,6 +146,15 @@ function Player ({ player }) {
             })}
           </div>
         ))}
+        {player.guesses.length === 0 && (
+          <div className='flex flex-row gap-1 justify-center'>
+            {new Array(length)
+              .fill(null)
+              .map((_, i) => (
+                <div key={i} className='w-6 h-6 rounded bg-gray-300' />
+              ))}
+          </div>
+        )}
       </div>
     </div>
   )

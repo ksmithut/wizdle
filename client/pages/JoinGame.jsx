@@ -35,7 +35,7 @@ export default function JoinGame () {
     nameGuess.push({ character: null, result: 'UNKNOWN' })
   }
   return (
-    <div className='h-full w-full flex justify-between items-center flex-col p-4'>
+    <div className='h-full w-full flex justify-between items-center flex-col'>
       <div className='w-full flex flex-col'>
         <label className='text-4xl text-center mb-4 uppercase font-bold'>
           Join Code:
