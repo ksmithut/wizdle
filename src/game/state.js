@@ -117,6 +117,19 @@ export function guess (gameState, playerId, guess) {
   if (!words.has(guess)) {
     return { success: false, error: new InvalidWord(guess) }
   }
+  const existingGuesses = player.guesses.reduce(
+    /**
+     * @param {Set<string>} set
+     * @param {import('./guess.js').Result} result
+     */
+    (set, result) => {
+      return set.add(result.reduce((word, char) => word + char.character, ''))
+    },
+    new Set()
+  )
+  if (existingGuesses.has(guess)) {
+    return { success: false, error: new AlreadyGuessed() }
+  }
   try {
     const result = actualGuess(gameState.word, guess)
     return {
@@ -203,6 +216,12 @@ export class PlayerNotRegistered extends GameError {
 export class PlayerAlreadyFinished extends GameError {
   constructor () {
     super('Player is already finished', 'PLAYER_ALREADY_FINISHED')
+  }
+}
+
+export class AlreadyGuessed extends GameError {
+  constructor () {
+    super('Word has already been gueessed', 'ALREADY_GUESSED')
   }
 }
 

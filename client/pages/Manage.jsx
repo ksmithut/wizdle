@@ -127,7 +127,12 @@ function Spectate ({ state }) {
 function Player ({ player, length }) {
   return (
     <div className='p-2 w-auto flex-0'>
-      <p className='text-center text-xl font-bold'>{player.name}</p>
+      <p
+        className='text-center text-3xl font-bold max-w-xs text-ellipsis overflow-hidden pb-2'
+        title={player.name}
+      >
+        {player.name}
+      </p>
       <div className='flex flex-col gap-1'>
         {player.guesses.map((guess, i) => (
           <div key={i} className='flex flex-row gap-1 justify-center'>
@@ -135,7 +140,7 @@ function Player ({ player, length }) {
               return (
                 <div
                   key={i}
-                  className={clsx('w-6 h-6 rounded', {
+                  className={clsx('w-9 h-9 rounded', {
                     'bg-green-500': char.result === 'HIT',
                     'bg-yellow-500': char.result === 'KNOWN',
                     'bg-gray-500': char.result === 'UNKNOWN'
@@ -151,7 +156,7 @@ function Player ({ player, length }) {
             {new Array(length)
               .fill(null)
               .map((_, i) => (
-                <div key={i} className='w-6 h-6 rounded bg-gray-300' />
+                <div key={i} className='w-9 h-9 rounded bg-gray-300' />
               ))}
           </div>
         )}
