@@ -10,6 +10,7 @@
     overflow-anchor: auto;
   }
   .h-screen-dvh {
+    height: 100vh;
     height: 100dvh;
   }
 }
