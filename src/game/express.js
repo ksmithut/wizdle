@@ -4,7 +4,7 @@ import wrap from '../lib/express-wrap.js'
 import { renderEvent } from '../lib/sse.js'
 import { GameError } from './state.js'
 
-const COOKIE_AGE_MS = 1000 * 60 * 60 * 24 * 14 // 2 weeks
+const COOKIE_AGE_MS = 1000 * 60 * 60 * 1 // 2 hours
 
 /**
  * @param {import('./service.js').GameService} service
@@ -74,6 +74,7 @@ export function configureGameRouter (service) {
         return
       }
       service.startGame(req.params.code)
+      res.clearCookie(`creator:${req.params.code}`)
       res.json({})
     })
   )

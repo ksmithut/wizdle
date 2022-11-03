@@ -4,7 +4,7 @@ import { createGame } from './game.js'
  * @typedef {ReturnType<configureGameService>} GameService
  */
 
-const GAME_TIMEOUT_MS = 1000 * 60 * 60 * 1 // 1 hour
+const GAME_TIMEOUT_MS = 1000 * 60 * 60 * 2 // 2 hours
 
 export function configureGameService () {
   /** @type {Map<string, { created: number, game: ReturnType<createGame>}>} */
