@@ -17,6 +17,7 @@ export default function App () {
         <Route path='/join/:code' element={<JoinGame />} />
         <Route path='/game/:code' element={<Game />} />
         <Route path='/game/:code/manage' element={<Manage />} />
+        <Route path='/game/:code/new' element={<Create />} />
       </Route>
     </Routes>
   )

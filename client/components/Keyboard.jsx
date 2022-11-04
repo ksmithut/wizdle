@@ -16,9 +16,10 @@ const defaultOnChange = value => value
  */
 export function useKeyboardInput (
   onEnter = defaultOnEnter,
-  onChange = defaultOnChange
+  onChange = defaultOnChange,
+  initialValue = ''
 ) {
-  const [word, setWord] = React.useState('')
+  const [word, setWord] = React.useState(initialValue)
   const handleKeyPress = React.useCallback(
     /**
      * @param {string} value

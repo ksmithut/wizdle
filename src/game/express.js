@@ -74,8 +74,33 @@ export function configureGameRouter (service) {
         return
       }
       service.startGame(req.params.code)
-      res.clearCookie(`creator:${req.params.code}`)
       res.json({})
+    })
+  )
+
+  router.post(
+    '/:code/new',
+    wrap(async (req, res, next) => {
+      const ownerCookie = req.signedCookies[`creator:${req.params.code}`]
+      if (!ownerCookie || !ownerCookie.startsWith(req.params.code + ':')) {
+        res.status(401).json({
+          error: 'You are not the creator of this game',
+          code: 'UNAUTHORIZED'
+        })
+        return
+      }
+      let word = req.query.word
+      if (typeof word !== 'string') {
+        return res.sendStatus(400).json({ error: 'Invalid word' })
+      }
+      const code = service.createNewGame(req.params.code, word)
+      res.cookie(`creator:${code}`, `${code}:${randomUUID()}`, {
+        httpOnly: true,
+        sameSite: 'lax',
+        signed: true,
+        maxAge: COOKIE_AGE_MS
+      })
+      res.status(201).json({ code })
     })
   )
 
@@ -84,6 +109,23 @@ export function configureGameRouter (service) {
     wrap(async (req, res, next) => {
       const playerId = getPlayerId(req)
       service.guess(req.params.code, playerId, req.params.guess)
+      res.json({})
+    })
+  )
+
+  router.delete(
+    '/:code',
+    wrap(async (req, res, next) => {
+      const ownerCookie = req.signedCookies[`creator:${req.params.code}`]
+      if (!ownerCookie || !ownerCookie.startsWith(req.params.code + ':')) {
+        res.status(401).json({
+          error: 'You are not the creator of this game',
+          code: 'UNAUTHORIZED'
+        })
+        return
+      }
+      res.clearCookie(`creator:${req.params.code}`)
+      service.closeGame(req.params.code)
       res.json({})
     })
   )
@@ -110,10 +152,12 @@ export function configureGameRouter (service) {
         }))
         if (game.state === 'FINISHED') {
           res.write(renderEvent({ event: 'done', data: JSON.stringify(game) }))
-          res.end()
+          // res.end()
         }
       }, () => {
         res.end()
+      }, (code) => {
+        res.write(renderEvent({ event: 'new', data: code }))
       })
       const interval = setInterval(() => {
         res.write(renderEvent({ comment: 'keepalive' }))

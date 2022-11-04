@@ -13,7 +13,7 @@ export default function Game () {
   // @ts-ignore
   const { code } = useParams()
   useRedirectIfDoesNotExist(code)
-  const { finished, state } = useGameState(code)
+  const { finished, state, newGame } = useGameState(code)
   if (!state) return <p>Loading...</p>
   if (state.state === 'INITIALIZED') {
     return (
@@ -23,15 +23,16 @@ export default function Game () {
     )
   }
 
-  return <GuessBoard code={code} state={state} />
+  return <GuessBoard code={code} state={state} newGame={newGame} />
 }
 
 /**
  * @param {object} props
  * @param {string} props.code
  * @param {import('../lib/api-hooks.js').GameState} props.state
+ * @param {string} props.newGame
  */
-function GuessBoard ({ code, state }) {
+function GuessBoard ({ code, state, newGame }) {
   const [guessInfo, guessAPI] = useGuess()
   const [guess, setGuess] = React.useState(
     /**
@@ -142,6 +143,14 @@ function GuessBoard ({ code, state }) {
             <Link className='text-center text-2xl text-blue-500' to='/'>
               Go Back Home
             </Link>
+            {newGame && (
+              <Link
+                className='text-center text-2xl text-blue-500'
+                to={`/join/${newGame}`}
+              >
+                Play Again?
+              </Link>
+            )}
           </>
         )
         : (

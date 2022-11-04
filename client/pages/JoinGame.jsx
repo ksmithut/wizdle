@@ -10,13 +10,20 @@ export default function JoinGame () {
   const { code } = useParams()
   const navigate = useNavigate()
   const [{ loading, error, data }, joinGame] = useJoinGame()
-  const [name, , handleKeyPress] = useKeyboardInput(React.useCallback(
-    /**
-     * @param {string} name
-     */
-    (name) => joinGame(code, name),
-    [code, joinGame]
-  ))
+  const [name, , handleKeyPress] = useKeyboardInput(
+    React.useCallback(
+      /**
+       * @param {string} name
+       */
+      (name) => {
+        localStorage.setItem('playerName', name)
+        return joinGame(code, name)
+      },
+      [code, joinGame]
+    ),
+    undefined,
+    localStorage.getItem('playerName') ?? ''
+  )
   React.useEffect(() => {
     if (data === true) navigate(`/game/${code}`)
   }, [data, code])

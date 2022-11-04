@@ -7,7 +7,7 @@ import { createGame } from './game.js'
 const GAME_TIMEOUT_MS = 1000 * 60 * 60 * 2 // 2 hours
 
 export function configureGameService () {
-  /** @type {Map<string, { created: number, game: ReturnType<createGame>}>} */
+  /** @type {Map<string, { created: number, subscribers: Set<(code: string) => void>, game: ReturnType<createGame>}>} */
   const gameMap = new Map()
 
   const cleanupInterval = setInterval(() => {
@@ -15,19 +15,36 @@ export function configureGameService () {
     for (const [key, game] of gameMap) {
       if (now - game.created > GAME_TIMEOUT_MS) {
         game.game.close()
+        game.subscribers.clear()
         gameMap.delete(key)
       }
     }
   }, 1000)
 
-  return {
+  const service = {
     /**
      * @param {string} word
      */
     createGame (word) {
       let code = generateCode()
       while (gameMap.has(code)) code = generateCode()
-      gameMap.set(code, { created: Date.now(), game: createGame(word) })
+      gameMap.set(code, {
+        created: Date.now(),
+        subscribers: new Set(),
+        game: createGame(word)
+      })
+      return code
+    },
+    /**
+     * @param {string} existingCode
+     * @param {string} word
+     */
+    createNewGame (existingCode, word) {
+      const game = gameMap.get(existingCode)
+      if (!game) throw new GameNotFound()
+      const code = service.createGame(word)
+      game.subscribers.forEach(onNewGame => onNewGame(code))
+      service.closeGame(existingCode)
       return code
     },
     /**
@@ -40,11 +57,17 @@ export function configureGameService () {
      * @param {string} code
      * @param {(game: import('./state.js').GameState) => void} onChange
      * @param {() => void} onFinish
+     * @param {(code: string) => void} onNewGame
      */
-    subscribe (code, onChange, onFinish) {
+    subscribe (code, onChange, onFinish, onNewGame) {
       const game = gameMap.get(code)
       if (!game) throw new GameNotFound()
-      return game.game.subscribe(onChange, onFinish)
+      game.subscribers.add(onNewGame)
+      const unsubscribe = game.game.subscribe(onChange, onFinish)
+      return () => {
+        unsubscribe()
+        game.subscribers.delete(onNewGame)
+      }
     },
     /**
      * @param {string} code
@@ -77,14 +100,18 @@ export function configureGameService () {
       const game = gameMap.get(code)
       if (!game) throw new GameNotFound()
       const result = game.game.guess(playerId, guess)
-      if (result.success) {
-        if (result.state.state === 'FINISHED') {
-          game.game.close()
-          gameMap.delete(code)
-        }
-        return result.state
-      }
+      if (result.success) return result.state
       throw result.error
+    },
+    /**
+     * @param {string} code
+     */
+    closeGame (code) {
+      const game = gameMap.get(code)
+      if (!game) return
+      game.subscribers.clear()
+      game.game.close()
+      gameMap.delete(code)
     },
     stop () {
       clearInterval(cleanupInterval)
@@ -94,6 +121,7 @@ export function configureGameService () {
       }
     }
   }
+  return service
 }
 
 export class GameNotFound extends Error {

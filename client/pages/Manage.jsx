@@ -38,7 +38,7 @@ export default function Manage () {
             onStartGameClick={handleStartGameClick}
           />
         )
-        : <Spectate state={state} />}
+        : <Spectate state={state} code={code} />}
     </div>
   )
 }
@@ -91,8 +91,9 @@ function PreGame ({ code, state, onStartGameClick }) {
 /**
  * @param {object} props
  * @param {import('../lib/api-hooks.js').GameState} props.state
+ * @param {string} props.code
  */
-function Spectate ({ state }) {
+function Spectate ({ state, code }) {
   return (
     <div className='w-full'>
       {state.state === 'FINISHED' && (
@@ -103,6 +104,12 @@ function Spectate ({ state }) {
             to='/'
           >
             Go Back Home
+          </Link>
+          <Link
+            className='text-center text-2xl text-blue-500 w-full inline-block'
+            to={`/game/${encodeURIComponent(code)}/new`}
+          >
+            Start New Game
           </Link>
         </>
       )}

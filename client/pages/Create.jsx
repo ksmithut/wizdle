@@ -1,16 +1,8 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Guess from '../components/Guess.jsx'
 import Keyboard, { useKeyboardInput } from '../components/Keyboard.jsx'
 import { useCreateGame } from '../lib/api-hooks.js'
-
-/**
- * @param {string} word
- */
-function normalizeWord (word) {
-  if (!word) return ''
-  return word.replace(/[^a-z]/ig, '').toUpperCase()
-}
 
 /** @type {Record<string, (error: any) => string>} */
 const ERRORS = {
@@ -20,7 +12,8 @@ const ERRORS = {
 
 export default function Create () {
   const navigate = useNavigate()
-  const [{ loading, error, data }, createGame] = useCreateGame()
+  const { code } = useParams()
+  const [{ loading, error, data }, createGame] = useCreateGame(code)
   const [hideText, setHideText] = React.useState(true)
   const [word, , handleKeyPress] = useKeyboardInput(React.useCallback(
     /**
@@ -32,10 +25,6 @@ export default function Create () {
     },
     [createGame]
   ))
-  const valid = React.useMemo(() => {
-    if (word.length < 4) return false
-    return true
-  }, [word, hideText])
   const handleToggleVisibility = React.useCallback(
     /** @type {React.MouseEventHandler<HTMLButtonElement>} */
     () => setHideText(value => !value),
@@ -60,6 +49,7 @@ export default function Create () {
     }
     return guess
   }, [word, hideText])
+  console.log(error)
   return (
     <div className='h-full w-full flex justify-between items-center flex-col'>
       <div className='flex flex-col items-center w-full'>

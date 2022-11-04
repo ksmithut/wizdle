@@ -22,6 +22,28 @@ export async function createGame (word) {
 
 /**
  * @param {string} code
+ * @param {string} word
+ */
+export async function createNewGame (code, word) {
+  const url = new URL(
+    `/api/games/${encodeURIComponent(code)}/new`,
+    window.location.origin
+  )
+  url.searchParams.set('word', word)
+  const res = await fetch(url.toString(), {
+    method: 'POST',
+    credentials: 'same-origin'
+  })
+  if (res.ok) {
+    return createGameSchema.parse(await res.json())
+  }
+  throw Object.assign(new Error('Failed to create game'), {
+    body: await res.json()
+  })
+}
+
+/**
+ * @param {string} code
  * @param {string} name
  */
 export async function joinGame (code, name) {
@@ -89,12 +111,13 @@ export async function guess (code, guess) {
  * @param {object} [params]
  * @param {(error: Event) => void} [params.onError]
  * @param {() => void} [params.onFinish]
+ * @param {(code: string) => void} [params.onNewGame]
  */
 export function listen (
   code,
   onMessage,
   // @ts-ignore
-  { onError = () => {}, onFinish = () => {} } = {}
+  { onError = () => {}, onFinish = () => {}, onNewGame = () => {} } = {}
 ) {
   const url = new URL(
     `/api/games/${encodeURIComponent(code)}/events`,
@@ -102,6 +125,7 @@ export function listen (
   )
   const eventSource = new EventSource(url.toString(), { withCredentials: true })
   function close () {
+    eventSource.removeEventListener('new', handleNewGame)
     eventSource.removeEventListener('update', handleMessage)
     eventSource.removeEventListener('error', handleError)
     eventSource.close()
@@ -112,10 +136,12 @@ export function listen (
   function handleMessage (event) {
     const data = JSON.parse(event.data)
     onMessage(data)
-    if (data.state === 'FINISHED') {
-      onFinish()
-      close()
-    }
+  }
+  /**
+   * @param {MessageEvent<string>} event
+   */
+  function handleNewGame (event) {
+    onNewGame(event.data)
   }
   /**
    * @param {Event} event
@@ -123,6 +149,7 @@ export function listen (
   function handleError (event) {
     onError(event)
   }
+  eventSource.addEventListener('new', handleNewGame)
   eventSource.addEventListener('update', handleMessage)
   eventSource.addEventListener('error', handleError)
 
