@@ -20,7 +20,7 @@ export default function Create () {
      * @param {string} word
      */
     word => {
-      if (word.length < 4) return
+      if (word.length < 3) return
       createGame(word.toLowerCase())
     },
     [createGame]
@@ -57,7 +57,7 @@ export default function Create () {
           <label htmlFor='word' className='text-3xl text-center'>
             Choose an english word
             <br />
-            with 4 or more letters
+            with 3 or more letters
           </label>
           <button
             type='button'
@@ -81,7 +81,7 @@ export default function Create () {
 
       <Keyboard
         enterLabel='create'
-        enterClassName={word.length >= 4 ? 'bg-green-500' : undefined}
+        enterClassName={word.length >= 3 ? 'bg-green-500' : undefined}
         onKeyPress={handleKeyPress}
       />
     </div>
