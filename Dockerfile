@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Create app directory
 RUN mkdir -p /app && chown node:node /app
@@ -6,16 +6,16 @@ USER node
 WORKDIR /app
 
 # Install dependencies
-COPY --chown=node:node package.json yarn.lock ./
-RUN yarn --frozen-lockfile
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci
 
 # Build client
 COPY --chown=node:node postcss.config.cjs tailwind.config.cjs vite.config.js ./
 COPY --chown=node:node client client
-RUN yarn build
+RUN npm run build
 
 # Release layer
-FROM node:18-alpine AS release
+FROM node:20-alpine AS release
 
 # Create app directory
 RUN mkdir -p /app && chown node:node /app
@@ -23,8 +23,8 @@ USER node
 WORKDIR /app
 
 # Install dependencies
-COPY --chown=node:node --from=base /app/package.json /app/yarn.lock ./
-RUN yarn --frozen-lockfile --production
+COPY --chown=node:node --from=base /app/package.json /app/package-lock.json ./
+RUN npm ci --production
 
 # Bundle app source
 COPY --chown=node:node --from=base /app/public public

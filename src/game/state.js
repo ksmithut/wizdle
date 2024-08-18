@@ -3,7 +3,7 @@ import actualGuess from './guess.js'
 
 const words = await fs
   .readFile(new URL('./words.txt', import.meta.url), 'utf-8')
-  .then(lines => new Set(lines.trim().split('\n')))
+  .then((lines) => new Set(lines.trim().split('\n')))
 
 /** @typedef {'INITIALIZED'|'STARTED'|'FINISHED'} State */
 
@@ -43,20 +43,20 @@ const STATE = {
   /** @type {'STARTED'} */
   STARTED: 'STARTED',
   /** @type {'FINISHED'} */
-  FINISHED: 'FINISHED'
+  FINISHED: 'FINISHED',
 }
 
 /**
  * @param {string} word
  * @returns {GameStateUpdateResult}
  */
-export function initializeGame (word) {
+export function initializeGame(word) {
   if (!words.has(word)) {
     return { success: false, error: new InvalidWord(word) }
   }
   return {
     success: true,
-    state: { state: STATE.INITIALIZED, word, players: new Map() }
+    state: { state: STATE.INITIALIZED, word, players: new Map() },
   }
 }
 
@@ -66,7 +66,7 @@ export function initializeGame (word) {
  * @param {string} name
  * @returns {GameStateUpdateResult}
  */
-export function addPlayer (gameState, playerId, name) {
+export function addPlayer(gameState, playerId, name) {
   if (gameState.state !== STATE.INITIALIZED) {
     return { success: false, error: new AlreadyStarted() }
   }
@@ -74,9 +74,12 @@ export function addPlayer (gameState, playerId, name) {
     success: true,
     state: {
       ...gameState,
-      players: new Map(gameState.players)
-        .set(playerId, { complete: false, guesses: [], name })
-    }
+      players: new Map(gameState.players).set(playerId, {
+        complete: false,
+        guesses: [],
+        name,
+      }),
+    },
   }
 }
 
@@ -84,7 +87,7 @@ export function addPlayer (gameState, playerId, name) {
  * @param {GameState} gameState
  * @returns {GameStateUpdateResult}
  */
-export function startGame (gameState) {
+export function startGame(gameState) {
   if (gameState.state !== STATE.INITIALIZED) {
     return { success: false, error: new AlreadyStarted() }
   }
@@ -100,7 +103,7 @@ export function startGame (gameState) {
  * @param {string} guess
  * @returns {GameStateUpdateResult}
  */
-export function guess (gameState, playerId, guess) {
+export function guess(gameState, playerId, guess) {
   if (gameState.state === STATE.INITIALIZED) {
     return { success: false, error: new NotStarted() }
   }
@@ -125,7 +128,7 @@ export function guess (gameState, playerId, guess) {
     (set, result) => {
       return set.add(result.reduce((word, char) => word + char.character, ''))
     },
-    new Set()
+    new Set(),
   )
   if (existingGuesses.has(guess)) {
     return { success: false, error: new AlreadyGuessed() }
@@ -136,13 +139,12 @@ export function guess (gameState, playerId, guess) {
       success: true,
       state: maybeFinish({
         ...gameState,
-        players: new Map(gameState.players)
-          .set(playerId, {
-            ...player,
-            complete: result.match,
-            guesses: [...player.guesses, result.result]
-          })
-      })
+        players: new Map(gameState.players).set(playerId, {
+          ...player,
+          complete: result.match,
+          guesses: [...player.guesses, result.result],
+        }),
+      }),
     }
   } catch (error) {
     if (!(error instanceof Error)) throw error
@@ -154,9 +156,9 @@ export function guess (gameState, playerId, guess) {
  * @param {GameState} gameState
  * @return {GameState}
  */
-function maybeFinish (gameState) {
-  const isFinished = Array.from(gameState.players.values()).every(player =>
-    player.complete
+function maybeFinish(gameState) {
+  const isFinished = Array.from(gameState.players.values()).every(
+    (player) => player.complete,
   )
   if (!isFinished) return gameState
   return { ...gameState, state: STATE.FINISHED }
@@ -167,7 +169,7 @@ export class GameError extends Error {
    * @param {string} message
    * @param {string} code
    */
-  constructor (message, code) {
+  constructor(message, code) {
     super(message)
     Error.captureStackTrace(this, this.constructor)
     this.code = code
@@ -178,49 +180,49 @@ export class InvalidWord extends GameError {
   /**
    * @param {string} word
    */
-  constructor (word) {
+  constructor(word) {
     super(`"${word.toUpperCase()}" is not a valid word`, 'INVALID_WORD')
   }
 }
 
 export class AlreadyStarted extends GameError {
-  constructor () {
+  constructor() {
     super('Game has already started', 'ALREADY_STARTED')
   }
 }
 
 export class NotStarted extends GameError {
-  constructor () {
+  constructor() {
     super('Game has not started', 'NOT_STARTED')
   }
 }
 
 export class AlreadyFinished extends GameError {
-  constructor () {
+  constructor() {
     super('Game has already finished', 'ALREADY_FINISHED')
   }
 }
 
 export class NotEnoughPlayers extends GameError {
-  constructor () {
+  constructor() {
     super('Not enought players to start', 'NOT_ENOUGH_PLAYERS')
   }
 }
 
 export class PlayerNotRegistered extends GameError {
-  constructor () {
+  constructor() {
     super('Player is not registered', 'PLAYER_NOT_REGISTERED')
   }
 }
 
 export class PlayerAlreadyFinished extends GameError {
-  constructor () {
+  constructor() {
     super('Player is already finished', 'PLAYER_ALREADY_FINISHED')
   }
 }
 
 export class AlreadyGuessed extends GameError {
-  constructor () {
+  constructor() {
     super('Word has already been gueessed', 'ALREADY_GUESSED')
   }
 }
@@ -229,7 +231,7 @@ export class GuessError extends GameError {
   /**
    * @param {Error} orig
    */
-  constructor (orig) {
+  constructor(orig) {
     super('Error guessing', 'GUESS_ERROR')
     this.orig = orig
   }

@@ -4,22 +4,22 @@ import Guess from '../components/Guess.jsx'
 import Keyboard, { useKeyboardInput } from '../components/Keyboard.jsx'
 import { useExists } from '../lib/api-hooks.js'
 
-export default function Join () {
+export default function Join() {
   const navigate = useNavigate()
   const [{ loading, error, data }, exists] = useExists()
   const [code, , handleKeyPress] = useKeyboardInput(
     React.useCallback(
       /** @param {string} word */
-      word => {
+      (word) => {
         word.length === 4 && exists(word)
       },
-      [exists]
+      [exists],
     ),
     React.useCallback(
       /** @param {string} word */
-      word => word.slice(0, 4),
-      []
-    )
+      (word) => word.slice(0, 4),
+      [],
+    ),
   )
   React.useEffect(() => {
     if (data) navigate(`/join/${code}`)
@@ -29,16 +29,16 @@ export default function Join () {
       return {
         character: code[i] ?? null,
         /** @type {'UNKNOWN'} */
-        result: 'UNKNOWN'
+        result: 'UNKNOWN',
       }
     })
   }, [code])
   return (
-    <div className='h-full w-full flex justify-between items-center flex-col'>
-      <div className='w-full flex items-center flex-col'>
+    <div className="h-full w-full flex justify-between items-center flex-col">
+      <div className="w-full flex items-center flex-col">
         <label
-          htmlFor='code'
-          className='text-4xl text-center mb-4 font-bold uppercase'
+          htmlFor="code"
+          className="text-4xl text-center mb-4 font-bold uppercase"
         >
           Enter Join Code:
         </label>
@@ -47,10 +47,8 @@ export default function Join () {
       </div>
       <Keyboard
         onKeyPress={handleKeyPress}
-        enterLabel='join'
-        enterClassName={code.length === 4
-          ? 'bg-green-500'
-          : undefined}
+        enterLabel="join"
+        enterClassName={code.length === 4 ? 'bg-green-500' : undefined}
       />
     </div>
   )

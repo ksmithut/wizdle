@@ -14,14 +14,14 @@ const RESULTS = {
   /** @type {'KNOWN'} */
   KNOWN: 'KNOWN',
   /** @type {'HIT'} */
-  HIT: 'HIT'
+  HIT: 'HIT',
 }
 
 /**
  * @param {string} word
  * @param {string} guess
  */
-export default function guess (word, guess) {
+export default function guess(word, guess) {
   if (typeof word !== 'string') throw new TypeError('word must be a string')
   if (typeof guess !== 'string') throw new TypeError('guess must be a string')
   if (word.length === 0) {
@@ -38,14 +38,14 @@ export default function guess (word, guess) {
      */
     (map, char, index) =>
       map.set(char, (map.get(char) ?? new Set()).add(index)),
-    new Map()
+    new Map(),
   )
   /** @type {Result} */
   const result = guess
     .split('')
     .map(
       /** @returns {CharacterResult} */
-      char => ({ character: char, result: RESULTS.UNKNOWN })
+      (char) => ({ character: char, result: RESULTS.UNKNOWN }),
     )
     .map(
       /** @returns {CharacterResult} */
@@ -56,11 +56,11 @@ export default function guess (word, guess) {
           return { ...result, result: RESULTS.HIT }
         }
         return result
-      }
+      },
     )
     .map(
       /** @returns {CharacterResult} */
-      result => {
+      (result) => {
         if (result.result !== 'UNKNOWN') return result
         const characterSet = charIndexMap.get(result.character)
         if (characterSet && characterSet.size > 0) {
@@ -69,8 +69,8 @@ export default function guess (word, guess) {
           return { ...result, result: RESULTS.KNOWN }
         }
         return result
-      }
+      },
     )
-  const match = result.every(result => result.result === RESULTS.HIT)
+  const match = result.every((result) => result.result === RESULTS.HIT)
   return { match, result }
 }

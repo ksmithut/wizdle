@@ -5,10 +5,10 @@ import Keyboard from '../components/Keyboard.jsx'
 import {
   useGameState,
   useGuess,
-  useRedirectIfDoesNotExist
+  useRedirectIfDoesNotExist,
 } from '../lib/api-hooks.js'
 
-export default function Game () {
+export default function Game() {
   /** @type {{ code: string }} */
   // @ts-ignore
   const { code } = useParams()
@@ -17,7 +17,7 @@ export default function Game () {
   if (!state) return <p>Loading...</p>
   if (state.state === 'INITIALIZED') {
     return (
-      <p className='text-3xl text-center p-2 w-full uppercase'>
+      <p className="text-3xl text-center p-2 w-full uppercase">
         Waiting for the game to begin
       </p>
     )
@@ -30,9 +30,9 @@ export default function Game () {
  * @param {object} props
  * @param {string} props.code
  * @param {import('../lib/api-hooks.js').GameState} props.state
- * @param {string} props.newGame
+ * @param {string?} props.newGame
  */
-function GuessBoard ({ code, state, newGame }) {
+function GuessBoard({ code, state, newGame }) {
   const [guessInfo, guessAPI] = useGuess()
   const [guess, setGuess] = React.useState(
     /**
@@ -41,12 +41,15 @@ function GuessBoard ({ code, state, newGame }) {
     () => {
       return new Array(state.length).fill(null).map(() => ({
         character: null,
-        result: 'UNKNOWN'
+        result: 'UNKNOWN',
       }))
-    }
+    },
   )
-  const word = guess.map(char => char.character ?? '').join('').toLowerCase()
-  const me = Object.values(state.players).find(player => player.me)
+  const word = guess
+    .map((char) => char.character ?? '')
+    .join('')
+    .toLowerCase()
+  const me = Object.values(state.players).find((player) => player.me)
   const handleKeyPress = React.useCallback(
     /**
      * @param {string} key
@@ -60,8 +63,8 @@ function GuessBoard ({ code, state, newGame }) {
               setGuess(
                 new Array(state.length).fill(null).map(() => ({
                   character: null,
-                  result: 'UNKNOWN'
-                }))
+                  result: 'UNKNOWN',
+                })),
               )
             }
           })
@@ -71,8 +74,8 @@ function GuessBoard ({ code, state, newGame }) {
         return
       }
       if (key === 'backspace') {
-        setGuess(guess => {
-          let indexToClear = guess.findIndex(c => c.character === null)
+        setGuess((guess) => {
+          let indexToClear = guess.findIndex((c) => c.character === null)
           if (indexToClear === -1) indexToClear = guess.length
           indexToClear -= 1
           return guess.map((c, i) => {
@@ -81,14 +84,14 @@ function GuessBoard ({ code, state, newGame }) {
         })
         return
       }
-      setGuess(guess => {
-        const indexToUpdate = guess.findIndex(c => c.character === null)
+      setGuess((guess) => {
+        const indexToUpdate = guess.findIndex((c) => c.character === null)
         return guess.map((c, i) => {
           return i === indexToUpdate ? { ...c, character: key } : c
         })
       })
     },
-    [code, word, state.length, me?.complete]
+    [code, word, state.length, me?.complete],
   )
   const { hits, misses, knowns } = React.useMemo(() => {
     return (me?.guesses ?? []).reduce(
@@ -99,7 +102,7 @@ function GuessBoard ({ code, state, newGame }) {
        * @param {string[]} memo.knowns
        */
       (memo, guess) => {
-        guess.forEach(c => {
+        guess.forEach((c) => {
           if (c.result === 'HIT') memo.hits.push(c.character.toUpperCase())
           if (c.result === 'KNOWN') memo.knowns.push(c.character.toUpperCase())
           if (c.result === 'UNKNOWN') {
@@ -108,59 +111,58 @@ function GuessBoard ({ code, state, newGame }) {
         })
         return memo
       },
-      { hits: [], misses: [], knowns: [] }
+      { hits: [], misses: [], knowns: [] },
     )
   }, [me?.guesses])
   if (!me) return null
+  /** @type {string|undefined} */
+  // @ts-ignore
+  const guessError = guessInfo.error?.body?.error
   return (
-    <div className='w-full h-full flex flex-col justify-between'>
-      <div className='w-full flex-1 gap-2 my-2 overflow-y-scroll'>
+    <div className="w-full h-full flex flex-col justify-between">
+      <div className="w-full flex-1 gap-2 my-2 overflow-y-scroll">
         <>
           {me.guesses.map((guess, i) => (
             <Guess
-              className='overflow-anchor-none mb-2'
+              className="overflow-anchor-none mb-2"
               key={i}
               guess={guess}
             />
           ))}
           {!me.complete && (
-            <Guess className='overflow-anchor-none mb-2' guess={guess} />
+            <Guess className="overflow-anchor-none mb-2" guess={guess} />
           )}
-          {guessInfo.error && (
-            <p className='font-bold text-red-500 text-center overflow-anchor-none mb-2'>
-              {guessInfo.error?.body?.error}
+          {guessError && (
+            <p className="font-bold text-red-500 text-center overflow-anchor-none mb-2">
+              {guessError}
             </p>
           )}
-          <div className='overflow-anchor-auto' style={{ height: 1 }}></div>
+          <div className="overflow-anchor-auto" style={{ height: 1 }}></div>
         </>
       </div>
-      {me.complete
-        ? (
-          <>
-            <p className='font-bold uppercase text-center text-3xl'>
-              Finished!
-            </p>
-            <Link className='text-center text-2xl text-blue-500' to='/'>
-              Go Back Home
+      {me.complete ? (
+        <>
+          <p className="font-bold uppercase text-center text-3xl">Finished!</p>
+          <Link className="text-center text-2xl text-blue-500" to="/">
+            Go Back Home
+          </Link>
+          {newGame && (
+            <Link
+              className="text-center text-2xl text-blue-500"
+              to={`/join/${newGame}`}
+            >
+              Play Again?
             </Link>
-            {newGame && (
-              <Link
-                className='text-center text-2xl text-blue-500'
-                to={`/join/${newGame}`}
-              >
-                Play Again?
-              </Link>
-            )}
-          </>
-        )
-        : (
-          <Keyboard
-            onKeyPress={handleKeyPress}
-            hits={hits}
-            misses={misses}
-            knowns={knowns}
-          />
-        )}
+          )}
+        </>
+      ) : (
+        <Keyboard
+          onKeyPress={handleKeyPress}
+          hits={hits}
+          misses={misses}
+          knowns={knowns}
+        />
+      )}
     </div>
   )
 }

@@ -37,19 +37,21 @@ await events.once(server.listen(port), 'listening')
 
 const closeServer = unlisten(server)
 
-async function stop () {
+async function stop() {
   service.stop()
   await closeServer(1000)
 }
 
 let called = false
-function shutdown () {
+function shutdown() {
   if (called) return
   called = true
-  stop().then(() => process.exit()).catch(err => {
-    console.error(err)
-    process.exit(1)
-  })
+  stop()
+    .then(() => process.exit())
+    .catch((err) => {
+      console.error(err)
+      process.exit(1)
+    })
 }
 process.once('SIGINT', shutdown)
 process.once('SIGTERM', shutdown)

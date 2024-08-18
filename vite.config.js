@@ -13,6 +13,6 @@ export default defineConfig({
   build: { outDir: DESTINATION, emptyOutDir: true },
   server: {
     port: Number.parseInt(DEV_PORT, 10),
-    proxy: { '/api': `${API_PROXY}` }
-  }
+    proxy: { '/api': `${API_PROXY}` },
+  },
 })

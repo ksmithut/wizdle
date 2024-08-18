@@ -9,20 +9,20 @@ const COOKIE_AGE_MS = 1000 * 60 * 60 * 1 // 2 hours
 /**
  * @param {import('./service.js').GameService} service
  */
-export function configureGameRouter (service) {
+export function configureGameRouter(service) {
   const router = express.Router()
 
   /**
    * @param {import('express').Request} req
    */
-  function getPlayerId (req) {
+  function getPlayerId(req) {
     let playerId = req.signedCookies.player_id
     if (!playerId) playerId = randomUUID()
     req.res?.cookie('player_id', playerId, {
       httpOnly: true,
       sameSite: 'lax',
       signed: true,
-      maxAge: COOKIE_AGE_MS
+      maxAge: COOKIE_AGE_MS,
     })
     return playerId
   }
@@ -39,10 +39,10 @@ export function configureGameRouter (service) {
         httpOnly: true,
         sameSite: 'lax',
         signed: true,
-        maxAge: COOKIE_AGE_MS
+        maxAge: COOKIE_AGE_MS,
       })
       res.status(201).json({ code })
-    })
+    }),
   )
 
   router.get(
@@ -50,7 +50,7 @@ export function configureGameRouter (service) {
     wrap(async (req, res, next) => {
       if (service.hasGame(req.params.code)) res.sendStatus(200)
       else res.sendStatus(404)
-    })
+    }),
   )
 
   router.post(
@@ -59,7 +59,7 @@ export function configureGameRouter (service) {
       const playerId = getPlayerId(req)
       service.joinGame(req.params.code, playerId, req.params.name)
       res.json({})
-    })
+    }),
   )
 
   router.post(
@@ -69,13 +69,13 @@ export function configureGameRouter (service) {
       if (!ownerCookie || !ownerCookie.startsWith(req.params.code + ':')) {
         res.status(401).json({
           error: 'You are not the creator of this game',
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
         return
       }
       service.startGame(req.params.code)
       res.json({})
-    })
+    }),
   )
 
   router.post(
@@ -85,7 +85,7 @@ export function configureGameRouter (service) {
       if (!ownerCookie || !ownerCookie.startsWith(req.params.code + ':')) {
         res.status(401).json({
           error: 'You are not the creator of this game',
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
         return
       }
@@ -98,10 +98,10 @@ export function configureGameRouter (service) {
         httpOnly: true,
         sameSite: 'lax',
         signed: true,
-        maxAge: COOKIE_AGE_MS
+        maxAge: COOKIE_AGE_MS,
       })
       res.status(201).json({ code })
-    })
+    }),
   )
 
   router.post(
@@ -110,7 +110,7 @@ export function configureGameRouter (service) {
       const playerId = getPlayerId(req)
       service.guess(req.params.code, playerId, req.params.guess)
       res.json({})
-    })
+    }),
   )
 
   router.delete(
@@ -120,14 +120,14 @@ export function configureGameRouter (service) {
       if (!ownerCookie || !ownerCookie.startsWith(req.params.code + ':')) {
         res.status(401).json({
           error: 'You are not the creator of this game',
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
         return
       }
       res.clearCookie(`creator:${req.params.code}`)
       service.closeGame(req.params.code)
       res.json({})
-    })
+    }),
   )
 
   router.get(
@@ -140,25 +140,34 @@ export function configureGameRouter (service) {
       res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         Connection: 'keep-alive',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
       })
       res.write('\n')
 
-      const unsubscribe = service.subscribe(req.params.code, (game) => {
-        // console.log(cleanState(game, playerId))
-        res.write(renderEvent({
-          event: 'update',
-          data: JSON.stringify(cleanState(game, playerId))
-        }))
-        if (game.state === 'FINISHED') {
-          res.write(renderEvent({ event: 'done', data: JSON.stringify(game) }))
-          // res.end()
-        }
-      }, () => {
-        res.end()
-      }, (code) => {
-        res.write(renderEvent({ event: 'new', data: code }))
-      })
+      const unsubscribe = service.subscribe(
+        req.params.code,
+        (game) => {
+          // console.log(cleanState(game, playerId))
+          res.write(
+            renderEvent({
+              event: 'update',
+              data: JSON.stringify(cleanState(game, playerId)),
+            }),
+          )
+          if (game.state === 'FINISHED') {
+            res.write(
+              renderEvent({ event: 'done', data: JSON.stringify(game) }),
+            )
+            // res.end()
+          }
+        },
+        () => {
+          res.end()
+        },
+        (code) => {
+          res.write(renderEvent({ event: 'new', data: code }))
+        },
+      )
       const interval = setInterval(() => {
         res.write(renderEvent({ comment: 'keepalive' }))
       }, 15000)
@@ -166,7 +175,7 @@ export function configureGameRouter (service) {
         unsubscribe()
         clearInterval(interval)
       })
-    })
+    }),
   )
 
   router.use(
@@ -179,9 +188,9 @@ export function configureGameRouter (service) {
       console.error(error)
       res.status(500).json({
         error: 'Unhandled Server Error',
-        code: 'UNHANDLED_SERVER_ERROR'
+        code: 'UNHANDLED_SERVER_ERROR',
       })
-    }
+    },
   )
 
   return router
@@ -191,7 +200,7 @@ export function configureGameRouter (service) {
  * @param {import('./state.js').GameState} game
  * @param {string} [playerId]
  */
-function cleanState (game, playerId) {
+function cleanState(game, playerId) {
   const players = Array.from(game.players.entries()).reduce(
     /**
      * @param {Record<string, import('./state.js').Player & { me: boolean }>} newMap
@@ -202,14 +211,14 @@ function cleanState (game, playerId) {
         newMap[id] = {
           ...player,
           me: false,
-          guesses: player.guesses.map(guess => {
-            return guess.map(char => ({ ...char, character: '' }))
-          })
+          guesses: player.guesses.map((guess) => {
+            return guess.map((char) => ({ ...char, character: '' }))
+          }),
         }
       }
       return newMap
     },
-    {}
+    {},
   )
   return { state: game.state, length: game.word.length, players }
 }

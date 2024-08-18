@@ -5,18 +5,18 @@ const createGameSchema = z.object({ code: z.string() })
 /**
  * @param {string} word
  */
-export async function createGame (word) {
+export async function createGame(word) {
   const url = new URL('/api/games', window.location.origin)
   url.searchParams.set('word', word)
   const res = await fetch(url.toString(), {
     method: 'POST',
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   })
   if (res.ok) {
     return createGameSchema.parse(await res.json())
   }
   throw Object.assign(new Error('Failed to create game'), {
-    body: await res.json()
+    body: await res.json(),
   })
 }
 
@@ -24,21 +24,21 @@ export async function createGame (word) {
  * @param {string} code
  * @param {string} word
  */
-export async function createNewGame (code, word) {
+export async function createNewGame(code, word) {
   const url = new URL(
     `/api/games/${encodeURIComponent(code)}/new`,
-    window.location.origin
+    window.location.origin,
   )
   url.searchParams.set('word', word)
   const res = await fetch(url.toString(), {
     method: 'POST',
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   })
   if (res.ok) {
     return createGameSchema.parse(await res.json())
   }
   throw Object.assign(new Error('Failed to create game'), {
-    body: await res.json()
+    body: await res.json(),
   })
 }
 
@@ -46,25 +46,25 @@ export async function createNewGame (code, word) {
  * @param {string} code
  * @param {string} name
  */
-export async function joinGame (code, name) {
+export async function joinGame(code, name) {
   const url = new URL(
     `/api/games/${encodeURIComponent(code)}/player/${encodeURIComponent(name)}`,
-    window.origin
+    window.origin,
   )
   const res = await fetch(url.toString(), {
     method: 'POST',
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   })
   if (res.ok) return true
   throw Object.assign(new Error('Failed to join game'), {
-    body: await res.json()
+    body: await res.json(),
   })
 }
 
 /**
  * @param {string} code
  */
-export async function exists (code) {
+export async function exists(code) {
   const url = new URL(`/api/games/${encodeURIComponent(code)}`, window.origin)
   const res = await fetch(url.toString(), { credentials: 'same-origin' })
   return res.ok
@@ -73,18 +73,18 @@ export async function exists (code) {
 /**
  * @param {string} code
  */
-export async function startGame (code) {
+export async function startGame(code) {
   const url = new URL(
     `/api/games/${encodeURIComponent(code)}/start`,
-    window.origin
+    window.origin,
   )
   const res = await fetch(url.toString(), {
     method: 'POST',
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   })
   if (res.ok) return true
   throw Object.assign(new Error('Failed to start game'), {
-    body: await res.json()
+    body: await res.json(),
   })
 }
 
@@ -92,14 +92,14 @@ export async function startGame (code) {
  * @param {string} code
  * @param {string} guess
  */
-export async function guess (code, guess) {
+export async function guess(code, guess) {
   const url = new URL(
     `/api/games/${encodeURIComponent(code)}/guess/${encodeURIComponent(guess)}`,
-    window.origin
+    window.origin,
   )
   const res = await fetch(url.toString(), {
     method: 'POST',
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   })
   if (res.ok) return true
   throw Object.assign(new Error('Failed to guess'), { body: await res.json() })
@@ -113,18 +113,18 @@ export async function guess (code, guess) {
  * @param {() => void} [params.onFinish]
  * @param {(code: string) => void} [params.onNewGame]
  */
-export function listen (
+export function listen(
   code,
   onMessage,
   // @ts-ignore
-  { onError = () => {}, onFinish = () => {}, onNewGame = () => {} } = {}
+  { onError = () => {}, onFinish = () => {}, onNewGame = () => {} } = {},
 ) {
   const url = new URL(
     `/api/games/${encodeURIComponent(code)}/events`,
-    window.origin
+    window.origin,
   )
   const eventSource = new EventSource(url.toString(), { withCredentials: true })
-  function close () {
+  function close() {
     eventSource.removeEventListener('new', handleNewGame)
     eventSource.removeEventListener('update', handleMessage)
     eventSource.removeEventListener('error', handleError)
@@ -133,20 +133,20 @@ export function listen (
   /**
    * @param {MessageEvent<string>} event
    */
-  function handleMessage (event) {
+  function handleMessage(event) {
     const data = JSON.parse(event.data)
     onMessage(data)
   }
   /**
    * @param {MessageEvent<string>} event
    */
-  function handleNewGame (event) {
+  function handleNewGame(event) {
     onNewGame(event.data)
   }
   /**
    * @param {Event} event
    */
-  function handleError (event) {
+  function handleError(event) {
     onError(event)
   }
   eventSource.addEventListener('new', handleNewGame)

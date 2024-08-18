@@ -15,7 +15,7 @@ const badWordsSet = new Set(badWordsData.trim().split(/\r?\n/))
 const words = data
   .trim()
   .split(/\r?\n/)
-  .filter(word => {
+  .filter((word) => {
     if (word.length < MIN_WORD_LENGTH) return false
     if (badWordsSet.has(word)) return false
     if (!word.match(/^[a-z]+$/)) return false

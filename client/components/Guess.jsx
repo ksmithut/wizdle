@@ -9,12 +9,12 @@ import React from 'react'
  * @param {string?} props.guess[].character
  * @param {'HIT'|'KNOWN'|'UNKNOWN'} props.guess[].result
  */
-export default function Guess ({ guess, className, style }) {
+export default function Guess({ guess, className, style }) {
   return (
     <div
       className={clsx(
         'h-14 flex gap-1 w-full justify-center sm:gap-2',
-        className
+        className,
       )}
       style={style}
     >
@@ -28,8 +28,8 @@ export default function Guess ({ guess, className, style }) {
                 ['bg-gray-300']: char.result === 'UNKNOWN' && !char.character,
                 ['bg-gray-500']: char.result === 'UNKNOWN' && char.character,
                 ['bg-green-500']: char.result === 'HIT',
-                ['bg-yellow-500']: char.result === 'KNOWN'
-              }
+                ['bg-yellow-500']: char.result === 'KNOWN',
+              },
             )}
           >
             {char.character?.toUpperCase()}

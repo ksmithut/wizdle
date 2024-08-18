@@ -11,7 +11,7 @@ if (container) {
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </React.StrictMode>
+    </React.StrictMode>,
   )
 } else {
   console.error('Could not find root element to mount to')

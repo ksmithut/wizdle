@@ -3,7 +3,7 @@ import * as state from './state.js'
 /**
  * @param {string} word
  */
-export function createGame (word) {
+export function createGame(word) {
   if (typeof word !== 'string') throw new Error('Invalid word')
   if (!word.match(/^[a-z]+$/)) throw new Error('Invalid word')
   const result = state.initializeGame(word)
@@ -15,7 +15,7 @@ export function createGame (word) {
   /**
    * @param {import('./state.js').GameState} gameState
    */
-  function emit (gameState) {
+  function emit(gameState) {
     subscribers.forEach(([onChange]) => onChange(gameState))
   }
 
@@ -24,7 +24,7 @@ export function createGame (word) {
      * @param {string} playerId
      * @param {string} name
      */
-    addPlayer (playerId, name) {
+    addPlayer(playerId, name) {
       const result = state.addPlayer(gameState, playerId, name)
       if (result.success) {
         gameState = result.state
@@ -32,7 +32,7 @@ export function createGame (word) {
       }
       return result
     },
-    startGame () {
+    startGame() {
       const result = state.startGame(gameState)
       if (result.success) {
         gameState = result.state
@@ -44,7 +44,7 @@ export function createGame (word) {
      * @param {string} playerId
      * @param {string} guess
      */
-    guess (playerId, guess) {
+    guess(playerId, guess) {
       const result = state.guess(gameState, playerId, guess)
       if (result.success) {
         gameState = result.state
@@ -56,7 +56,7 @@ export function createGame (word) {
      * @param {(gameState: import('./state.js').GameState) => void} onChange
      * @param {() => void} onFinish
      */
-    subscribe (onChange, onFinish) {
+    subscribe(onChange, onFinish) {
       /** @type {[(gameState: import('./state.js').GameState) => void, () => void]} */
       const subscriberTuple = [onChange, onFinish]
       subscribers.add(subscriberTuple)
@@ -66,9 +66,9 @@ export function createGame (word) {
         onFinish()
       }
     },
-    close () {
+    close() {
       subscribers.forEach(([_, onFinish]) => onFinish())
       subscribers.clear()
-    }
+    },
   }
 }

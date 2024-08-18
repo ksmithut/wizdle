@@ -7,7 +7,7 @@ import { useLazyPromise } from './use-promise.js'
  * @param {string} [code]
  * @returns {[{ loading: boolean, error: unknown?, data: { code: string }? }, (word: string) => Promise<{ status: 'fulfilled', value: { code: string } } | { status: 'rejected', reason: unknown }>]}
  */
-export function useCreateGame (code) {
+export function useCreateGame(code) {
   const [createGameData, createGame] = useLazyPromise(api.createGame)
   const [createNewGameData, createNewGame] = useLazyPromise(api.createNewGame)
   const func = React.useMemo(() => {
@@ -20,23 +20,23 @@ export function useCreateGame (code) {
   return [code ? createNewGameData : createGameData, func]
 }
 
-export function useCreateNewGame () {
+export function useCreateNewGame() {
   return useLazyPromise(api.createNewGame)
 }
 
-export function useJoinGame () {
+export function useJoinGame() {
   return useLazyPromise(api.joinGame)
 }
 
-export function useExists () {
+export function useExists() {
   return useLazyPromise(api.exists)
 }
 
-export function useStartGame () {
+export function useStartGame() {
   return useLazyPromise(api.startGame)
 }
 
-export function useGuess () {
+export function useGuess() {
   return useLazyPromise(api.guess)
 }
 
@@ -66,7 +66,7 @@ export function useGuess () {
 /**
  * @param {string} code
  */
-export function useGameState (code) {
+export function useGameState(code) {
   const [state, setState] = React.useState(() => ({
     finished: false,
     /** @type {string?} */
@@ -74,27 +74,31 @@ export function useGameState (code) {
     /** @type {Event?} */
     error: null,
     /** @type {GameState?} */
-    state: null
+    state: null,
   }))
   React.useEffect(() => {
-    return api.listen(code, (data) => {
-      setState(state => ({
-        ...state,
-        error: null,
-        finished: false,
-        state: data
-      }))
-    }, {
-      onError (event) {
-        setState(state => ({ ...state, error: event }))
+    return api.listen(
+      code,
+      (data) => {
+        setState((state) => ({
+          ...state,
+          error: null,
+          finished: false,
+          state: data,
+        }))
       },
-      onFinish () {
-        setState(state => ({ ...state, error: null, finished: true }))
+      {
+        onError(event) {
+          setState((state) => ({ ...state, error: event }))
+        },
+        onFinish() {
+          setState((state) => ({ ...state, error: null, finished: true }))
+        },
+        onNewGame(code) {
+          setState((state) => ({ ...state, newGame: code }))
+        },
       },
-      onNewGame (code) {
-        setState(state => ({ ...state, newGame: code }))
-      }
-    })
+    )
   }, [code])
   return state
 }
@@ -102,12 +106,12 @@ export function useGameState (code) {
 /**
  * @param {string} code
  */
-export function useRedirectIfDoesNotExist (code) {
+export function useRedirectIfDoesNotExist(code) {
   const [existsInfo, exists] = useExists()
   const navigate = useNavigate()
   React.useEffect(() => {
     if (code) {
-      exists(code).then(res => {
+      exists(code).then((res) => {
         if (res.status === 'fulfilled' && res.value === false) {
           navigate('/')
         }
