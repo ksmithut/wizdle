@@ -5,7 +5,7 @@ const MIN_WORD_LENGTH = 3
 const source =
   'https://raw.githubusercontent.com/lorenbrichter/Words/master/Words/en.txt'
 const badWordsSource =
-  'https://raw.githubusercontent.com/coffee-and-fun/google-profanity-words/main/data/list.txt'
+  'https://raw.githubusercontent.com/coffee-and-fun/google-profanity-words/main/data/en.txt'
 
 const data = await (await fetch(source)).text()
 const badWordsData = await (await fetch(badWordsSource)).text()
