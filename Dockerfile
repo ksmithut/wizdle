@@ -10,7 +10,7 @@ COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci
 
 # Build client
-COPY --chown=node:node postcss.config.cjs tailwind.config.cjs vite.config.js ./
+COPY --chown=node:node postcss.config.js tailwind.config.js vite.config.js ./
 COPY --chown=node:node client client
 RUN npm run build
 
